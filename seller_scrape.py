@@ -152,6 +152,7 @@ def scrape_seller_profiles(params):
     summary_output_file = params.get("output_file") or "seller_profiles.csv"
     item_output_folder = params.get("item_output_folder") or "seller_items"
     delay_range = params.get("delay_range", [0.1, 0.5])
+    append_sellers = params.get("append_sellers", 0)
     closet_params = params.get("closet_params", {})
     seller_range = params.get("seller_range", [1, None])
     max_pages = params.get("max_pages")
@@ -160,7 +161,16 @@ def scrape_seller_profiles(params):
     if not input_file:
         input_file = find_latest_csv()
 
-    summary_output_file = get_unique_filename(summary_output_file)
+    if not os.path.exists(summary_output_file) or not append_sellers:
+        if not append_sellers:
+            summary_output_file = get_unique_filename(summary_output_file)
+
+        write_mode = "w"
+        print(f"Output file doesn't exist, creating output file {summary_output_file}")
+    else:
+        write_mode = "a"
+        print(f"Appending to {summary_output_file}")
+
     os.makedirs(item_output_folder, exist_ok=True)
 
     if not os.path.exists(input_file):
@@ -178,9 +188,10 @@ def scrape_seller_profiles(params):
     seller_rows = []
 
     keys = ["Seller", "Listings", "Followers", "Following", "ItemCount", "URL", "ItemCSV"]
-    with open(summary_output_file, "w", newline="", encoding="utf-8") as f:
+    with open(summary_output_file, write_mode, newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=keys)
-        writer.writeheader()
+        if write_mode == "w":
+            writer.writeheader()
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = [executor.submit(process_single_seller, i + start_index + 1, seller, headers, closet_params, max_pages, delay_range, item_output_folder) for i, seller in enumerate(selected_sellers)]
@@ -206,7 +217,3 @@ if __name__ == "__main__":
     PARAMS_FILE = "seller_params.json"
     params = load_params(PARAMS_FOLDER, PARAMS_FILE)
     scrape_seller_profiles(params)
-
-
-
-##TODO: MAKE THE LOOP APPEND TO THE CSV EVERY COUPLE HUNDRED LOOPS INSTEAD OF DOING IT ALL AT THE END

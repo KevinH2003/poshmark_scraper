@@ -4,6 +4,7 @@ import json
 import csv
 import urllib.parse
 import os
+from tqdm import tqdm
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -73,7 +74,7 @@ def scrape_page(params, page):
     page_params = params.copy()
     page_params["page"] = page
     url = build_url(page_params)
-    print(f"Scraping page {page}: {url}")
+    # print(f"Scraping page {page}: {url}")
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
     listings = soup.find_all("div", {"data-et-name": "listing"})
@@ -85,16 +86,57 @@ def scrape_poshmark(params, output_file="poshmark_listings.csv"):
     max_pages = params.get("max_pages")
     max_workers = params.get("max_workers", 5)
 
+    categories = params.get("categories", [])
+    price_range = params.get("price_range", [0, 100])
+    price_step = params.get("price_step", None)
+
+    if not categories:
+        print("No categories provided.")
+        return
+
+    queries = []
+    for category in categories:
+        cat_name = category.get("name")
+        cat_colors = category.get("colors", [])
+        cat_sizes = category.get("sizes", [])
+        cat_brands = category.get("brands", [])
+
+        if price_step:
+            for price_start in range(price_range[0], price_range[1] + 1, price_step):
+                price_end = min(price_start + price_step - 1, price_range[1])
+                # print(f"{price_start}, {price_end}")
+                for page in range(1, max_pages + 1):
+                    queries.append({
+                        "category": cat_name,
+                        "colors": cat_colors,
+                        "sizes": cat_sizes,
+                        "brands": cat_brands,
+                        "price[]": f"{price_start}-{price_end}",
+                        "sort_by": params.get("sort_by", "just_in"),
+                        "page": page
+                    })
+        else:
+            for page in range(1, max_pages + 1):
+                queries.append({
+                    "category": cat_name,
+                    "colors": cat_colors,
+                    "sizes": cat_sizes,
+                    "brands": cat_brands,
+                    "price[]": f"-{price_range[1]}",
+                    "sort_by": params.get("sort_by", "just_in"),
+                    "page": page
+                })
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(scrape_page, params, page): page for page in range(1, max_pages + 1)}
-        for future in as_completed(futures):
+        futures = {executor.submit(scrape_page, q, q["page"]): q for q in queries}
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Scraping Pages", unit="page"):
             try:
                 rows = future.result()
                 if not rows:
-                    print(f"No listings found on page {futures[future]}")
+                    print(f"No listings found on page {futures[future]['page']} of {futures[future]['category']}")
                 all_rows.extend(rows)
             except Exception as e:
-                print(f"Error scraping page {futures[future]}: {e}")
+                print(f"Error scraping {futures[future]['category']} page {futures[future]['page']}: {e}")
 
     output_file = get_unique_filename(output_file)
     keys = ["Title", "Price", "Size", "Brand", "Seller", "URL", "Image", "Likes", "CategoryID"]
@@ -115,6 +157,6 @@ def load_params(folder="params", filename="item_params.json"):
 
 if __name__ == "__main__":
     PARAMS_FOLDER = "params"
-    PARAMS_FILE = "item_params.json"
+    PARAMS_FILE = "item_params_generated.json"
     params = load_params(PARAMS_FOLDER, PARAMS_FILE)
     scrape_poshmark(params)
