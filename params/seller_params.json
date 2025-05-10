@@ -1,14 +1,14 @@
 {
     "input_file": "",
     "output_file": "",
-    "item_output_folder": "test",
+    "item_output_folder": "seller_items",
     "delay_range": [0.01, 0.05],
     "closet_params": {
       "sort_by": "price_asc",
       "availability": "available",
       "price[]": ["-15"]
     },
-    "seller_range": [1, null],
+    "seller_range": [101, 200],
     "max_pages": 20,
     "max_workers": 30
   }

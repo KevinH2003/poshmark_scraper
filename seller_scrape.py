@@ -177,20 +177,20 @@ def scrape_seller_profiles(params):
     headers = {"User-Agent": "Mozilla/5.0"}
     seller_rows = []
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_single_seller, i + start_index + 1, seller, headers, closet_params, max_pages, delay_range, item_output_folder) for i, seller in enumerate(selected_sellers)]
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Scraping Sellers", unit="seller"):
-            try:
-                row = future.result()
-                seller_rows.append(row)
-            except Exception as e:
-                print(f"❌ Error in thread: {e}")
-
     keys = ["Seller", "Listings", "Followers", "Following", "ItemCount", "URL", "ItemCSV"]
     with open(summary_output_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=keys)
         writer.writeheader()
-        writer.writerows(seller_rows)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(process_single_seller, i + start_index + 1, seller, headers, closet_params, max_pages, delay_range, item_output_folder) for i, seller in enumerate(selected_sellers)]
+            for future in tqdm(as_completed(futures), total=len(futures), desc="Scraping Sellers", unit="seller"):
+                try:
+                    row = future.result()
+                    writer.writerow(row)
+                    seller_rows.append(row)
+                except Exception as e:
+                    print(f"❌ Error in thread: {e}")
 
     print(f"\n✅ Saved summary to {summary_output_file} and item files to {item_output_folder}/")
 
@@ -207,3 +207,6 @@ if __name__ == "__main__":
     params = load_params(PARAMS_FOLDER, PARAMS_FILE)
     scrape_seller_profiles(params)
 
+
+
+##TODO: MAKE THE LOOP APPEND TO THE CSV EVERY COUPLE HUNDRED LOOPS INSTEAD OF DOING IT ALL AT THE END
