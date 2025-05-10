@@ -42,7 +42,7 @@ def build_url(params):
 
 def extract_listing_data(listing):
     def safe_text(tag):
-        return tag.text.strip() if tag else "N/A"
+        return tag.get_text(strip=True).replace("\n", " ") if tag else "N/A"
 
     title_tag = listing.find("a", class_="tile__title")
     price_tag = listing.find("span", class_="p--t--1 fw--bold")
@@ -127,24 +127,22 @@ def scrape_poshmark(params, output_file="poshmark_listings.csv"):
                     "page": page
                 })
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(scrape_page, q, q["page"]): q for q in queries}
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Scraping Pages", unit="page"):
-            try:
-                rows = future.result()
-                if not rows:
-                    print(f"No listings found on page {futures[future]['page']} of {futures[future]['category']}")
-                all_rows.extend(rows)
-            except Exception as e:
-                print(f"Error scraping {futures[future]['category']} page {futures[future]['page']}: {e}")
-
     output_file = get_unique_filename(output_file)
     keys = ["Title", "Price", "Size", "Brand", "Seller", "URL", "Image", "Likes", "CategoryID"]
-
     with open(output_file, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=keys)
+        writer = csv.DictWriter(f, fieldnames=keys, quoting=csv.QUOTE_ALL)
         writer.writeheader()
-        writer.writerows(all_rows)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(scrape_page, q, q["page"]): q for q in queries}
+            for future in tqdm(as_completed(futures), total=len(futures), desc="Scraping Pages", unit="page"):
+                try:
+                    rows = future.result()
+                    if not rows:
+                        print(f"No listings found on page {futures[future]['page']} of {futures[future]['category']}")
+                    writer.writerows(rows)
+                except Exception as e:
+                    print(f"Error scraping {futures[future]['category']} page {futures[future]['page']}: {e}")
 
     print(f"\nSaved {len(all_rows)} total listings to {output_file}")
 
