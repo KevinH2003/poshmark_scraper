@@ -1,0 +1,12 @@
+{
+    "category": "Men-Shoes",
+    "colors": ["Black", "Gray"],
+    "sizes": ["8", "8.5", "9"],
+    "brands": ["Vans", "Converse"],
+    "price_max": 15,
+    "sort_by": "like_count",
+    "page": 1,
+    "max_pages": 20,
+    "max_workers": 3
+  }
+  
