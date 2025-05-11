@@ -19,7 +19,7 @@ def build_url(params):
     colors = params.get("colors", [])
     sizes = params.get("sizes", [])
     brands = params.get("brands", [])
-    price_max = params.get("price_max")
+    price_range = params.get("price_range", [])
     sort_by = params.get("sort_by", "just_in")
     page = params.get("page", 1)
 
@@ -34,8 +34,8 @@ def build_url(params):
         query.setdefault("size[]", []).append(size)
     for brand in brands:
         query.setdefault("brand[]", []).append(brand)
-    if price_max is not None:
-        query["price[]"] = f"-{price_max}"
+    if price_range is not None:
+        query["price[]"] = f"{price_range[0]}-{price_range[1]}"
 
     query_str = urllib.parse.urlencode(query, doseq=True)
     return f"{base}{full_path}?{query_str}"
@@ -111,7 +111,7 @@ def scrape_poshmark(params, output_file="poshmark_listings.csv"):
                         "colors": cat_colors,
                         "sizes": cat_sizes,
                         "brands": cat_brands,
-                        "price[]": f"{price_start}-{price_end}",
+                        "price_range": [price_start, price_end],
                         "sort_by": params.get("sort_by", "just_in"),
                         "page": page
                     })
@@ -122,7 +122,7 @@ def scrape_poshmark(params, output_file="poshmark_listings.csv"):
                     "colors": cat_colors,
                     "sizes": cat_sizes,
                     "brands": cat_brands,
-                    "price[]": f"-{price_range[1]}",
+                    "price_range": price_range,
                     "sort_by": params.get("sort_by", "just_in"),
                     "page": page
                 })
@@ -138,8 +138,8 @@ def scrape_poshmark(params, output_file="poshmark_listings.csv"):
             for future in tqdm(as_completed(futures), total=len(futures), desc="Scraping Pages", unit="page"):
                 try:
                     rows = future.result()
-                    if not rows:
-                        print(f"No listings found on page {futures[future]['page']} of {futures[future]['category']}")
+                    # if not rows:
+                    #     print(f"No listings found on page {futures[future]['page']} of {futures[future]['category']}")
                     writer.writerows(rows)
                 except Exception as e:
                     print(f"Error scraping {futures[future]['category']} page {futures[future]['page']}: {e}")

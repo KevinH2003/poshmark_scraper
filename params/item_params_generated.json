@@ -1,0 +1,184 @@
+{
+  "categories": [
+    {
+      "name": "Men-Shoes",
+      "colors": [],
+      "sizes": [
+        "8",
+        "8.5"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Shirts",
+      "colors": [],
+      "sizes": [
+        "S",
+        "M"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Shirts-Casual_Button_Down_Shirts",
+      "colors": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Pants",
+      "colors": [],
+      "sizes": [
+        "26",
+        "27",
+        "28",
+        "29",
+        "30"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Pants-Cargo",
+      "colors": [],
+      "sizes": [
+        "26",
+        "27",
+        "28",
+        "29",
+        "30"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Shorts",
+      "colors": [],
+      "sizes": [
+        "26",
+        "27",
+        "28",
+        "29",
+        "30"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Jeans",
+      "colors": [],
+      "sizes": [
+        "26",
+        "27",
+        "28",
+        "29",
+        "30"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Suits_&_Blazers",
+      "colors": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Jackets_&_Coats",
+      "colors": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Sweaters",
+      "colors": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Men-Accessories",
+      "colors": [],
+      "sizes": [],
+      "brands": []
+    },
+    {
+      "name": "Women-Tops",
+      "colors": [],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Women-Jeans",
+      "colors": [],
+      "sizes": [
+        "4",
+        "6",
+        "26",
+        "27",
+        "28",
+        "29"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Women-Pants_&_Jumpsuits",
+      "colors": [],
+      "sizes": [
+        "4",
+        "6",
+        "26",
+        "27",
+        "28",
+        "29"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Women-Jackets_&_Coats",
+      "colors": [],
+      "sizes": [
+        "M",
+        "L",
+        "XL"
+      ],
+      "brands": []
+    },
+    {
+      "name": "Women-Sweaters",
+      "colors": [],
+      "sizes": [
+        "M",
+        "L",
+        "XL"
+      ],
+      "brands": []
+    }
+  ],
+  "price_range": [
+    0,
+    15
+  ],
+  "price_step": 3,
+  "sort_by": "like_count",
+  "max_pages": 50,
+  "max_workers": 30
+}
