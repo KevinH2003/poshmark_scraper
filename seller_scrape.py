@@ -56,6 +56,7 @@ def extract_listing_data(listing):
     link_tag = listing.find("a", class_="tile__covershot")
     size_tag = listing.find("a", class_="tile__details__pipe__size")
     brand_tag = listing.find("a", class_="tile__details__pipe__brand")
+    seller_tag = listing.find("a", class_="tile__creator")
     img_tag = listing.find("img")
     like_tag = listing.find("div", class_="social-action-bar__like")
     like_span = like_tag.find("span") if like_tag else None
@@ -77,6 +78,7 @@ def extract_listing_data(listing):
         "ItemURL": f"https://poshmark.com{link_tag['href']}" if link_tag else "N/A",
         "CategoryID": category_id,
         "CategoryName": category_name,
+        "Seller": safe_text(seller_tag),
     }
 
 def build_seller_url(seller, closet_params=None, page=None):
@@ -94,7 +96,7 @@ def build_seller_url(seller, closet_params=None, page=None):
 def scrape_all_seller_items(seller, headers, closet_params, max_pages, delay_range, item_output_folder):
     stats = {"Listings": "N/A", "Followers": "N/A", "Following": "N/A"}
     item_filename = get_unique_filename(os.path.join(item_output_folder, f"items_{seller}.csv"))
-    fieldnames = ["Title", "Price", "Size", "Brand", "Image", "Likes", "ItemURL", "CategoryID", "CategoryName"]
+    fieldnames = ["Title", "Price", "Size", "Brand", "Image", "Likes", "ItemURL", "CategoryID", "CategoryName", "Seller"]
     with open(item_filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()

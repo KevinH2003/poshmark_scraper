@@ -1,7 +1,7 @@
 {
     "input_file": "BIG_LISTING_SCRAPE.csv",
     "output_file": "seller_profiles.csv",
-    "item_output_folder": "seller_items_TEST",
+    "item_output_folder": "seller_items",
     "delay_range": [0.01, 0.05],
     "append_sellers": 1,
     "closet_params": {
@@ -9,7 +9,7 @@
       "availability": "available",
       "price[]": ["-15"]
     },
-    "seller_range": [2170, null],
+    "seller_range": [0, null],
     "max_pages": 50,
     "max_workers": 30
   }
