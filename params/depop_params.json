@@ -1,0 +1,12 @@
+{
+  "items_per_page": 24,
+  "sort_by": "priceAscending",
+  "country": "us",
+  "currency": "USD",
+  "gender": "male",
+  "group": "footwear",
+  "product_type": "trainers",
+  "max_pages": 20,
+  "delay_range": [0.5, 1.5],
+  "output_file": "depop_listings.csv"
+}
